@@ -4,10 +4,10 @@ package com.httpserver;
  * Hello world!
  *
  */
-public class App 
+public class HTTPServer 
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        System.out.println( "The server is starting..." );
     }
 }
