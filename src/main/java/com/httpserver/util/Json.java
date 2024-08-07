@@ -19,8 +19,8 @@ public class Json {
 		return objectMapper;
 	}
 	
-	public static JsonNode parse(String jsonSrc) throws IOException {
-		return objectMapper.readTree(jsonSrc);
+	public static JsonNode parse(String jsonSource) throws IOException {
+		return objectMapper.readTree(jsonSource);
 	}
 	
 	public static <T> T fromJson(JsonNode jsonNode, Class<T> clazz) throws JsonProcessingException {
@@ -41,7 +41,7 @@ public class Json {
 	
 	private static String generateJson(Object object, Boolean pretty) throws JsonProcessingException {
 		ObjectWriter objectWriter = objectMapper.writer();
-		if(pretty == Boolean.TRUE) {
+		if(Boolean.valueOf(pretty.booleanValue()) == true) {
 			objectWriter = objectWriter.with(SerializationFeature.INDENT_OUTPUT);
 		}
 		return objectWriter.writeValueAsString(object);

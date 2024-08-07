@@ -1,5 +1,13 @@
 package com.httpserver.configuration;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.httpserver.util.Json;
+
 public class ConfigurationManager {
 
 	private static ConfigurationManager configurationManager;
@@ -19,15 +27,49 @@ public class ConfigurationManager {
 	/*
 	 * Used to load a configuration file by the path provided
 	 */
-	public static void loadConfigurationFile(String filePath) {
+	public void loadConfigurationFile(String filePath) {
+		FileReader fileReader = null;
 		
+		try {
+			fileReader = new FileReader(filePath);
+		} catch (FileNotFoundException e) {
+			throw new HttpConfigurationException(e);
+		}
+		
+		StringBuffer stringBuffer = new StringBuffer();
+		int i;
+		
+		try {
+			while((i = fileReader.read()) != -1 ) {
+				stringBuffer.append((char) i);
+			}
+		} catch (IOException e) {
+			throw new HttpConfigurationException(e);
+		}
+		JsonNode jsonNode = null;
+		
+		try {
+			jsonNode = Json.parse(stringBuffer.toString());
+			fileReader.close();
+		} catch (IOException e) {
+			throw new HttpConfigurationException("Error parsing the configuration file", e);
+		}
+		
+		try {
+			configuration = Json.fromJson(jsonNode, Configuration.class);
+		} catch (JsonProcessingException e) {
+			throw new HttpConfigurationException("Error parsing the configuration file, internal", e);
+		}
 	}
 	
 	/*
 	 * Returns the loaded configuration
 	 */
-	public static void getCurrentConfiguration() {
-		
+	public Configuration getCurrentConfiguration() {
+		if(configuration == null) {
+			throw new HttpConfigurationException("No configuaration set");
+		}
+		return configuration;
 	}
 	
 }
