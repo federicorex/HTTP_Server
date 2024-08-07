@@ -32,8 +32,8 @@ public class ConfigurationManager {
 		
 		try {
 			fileReader = new FileReader(filePath);
-		} catch (FileNotFoundException e) {
-			throw new HttpConfigurationException(e);
+		} catch (FileNotFoundException fileNotFoundException) {
+			throw new HttpConfigurationException(fileNotFoundException);
 		}
 		
 		StringBuffer stringBuffer = new StringBuffer();
@@ -43,22 +43,22 @@ public class ConfigurationManager {
 			while((i = fileReader.read()) != -1 ) {
 				stringBuffer.append((char) i);
 			}
-		} catch (IOException e) {
-			throw new HttpConfigurationException(e);
+		} catch (IOException ioException) {
+			throw new HttpConfigurationException(ioException);
 		}
 		JsonNode jsonNode = null;
 		
 		try {
 			jsonNode = Json.parse(stringBuffer.toString());
 			fileReader.close();
-		} catch (IOException e) {
-			throw new HttpConfigurationException("Error parsing the configuration file", e);
+		} catch (IOException ioException) {
+			throw new HttpConfigurationException("Error parsing the configuration file", ioException);
 		}
 		
 		try {
 			configuration = Json.fromJson(jsonNode, Configuration.class);
-		} catch (JsonProcessingException e) {
-			throw new HttpConfigurationException("Error parsing the configuration file, internal", e);
+		} catch (JsonProcessingException jsonProcessingException) {
+			throw new HttpConfigurationException("Error parsing the configuration file, internal", jsonProcessingException);
 		}
 	}
 	
