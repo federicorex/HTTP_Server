@@ -1,17 +1,10 @@
 # Compiled class file
 *.class
 
-## Target folder at the top level of the project structue and paths and contents underneath it
-
 target/
-
-target/*
-
-## Target folder at any level of the project structue
-
-**/target
-
-/target 
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/ 
 
 # Log file
 *.log
