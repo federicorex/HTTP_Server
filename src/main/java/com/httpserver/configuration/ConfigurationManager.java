@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.httpserver.util.Json;
 
+// This class is projected to create and manage the Configuration object.
 public class ConfigurationManager {
 
 	private static ConfigurationManager configurationManager;
@@ -17,6 +18,7 @@ public class ConfigurationManager {
 	
 	}
 	
+	// Singleton creation.
 	public static ConfigurationManager getInstance() {
 		if(configurationManager == null) {
 			configurationManager = new ConfigurationManager();
@@ -25,7 +27,9 @@ public class ConfigurationManager {
 	}
 	
 	/*
-	 * Used to load a configuration file by the path provided
+	 * Used to load a configuration file by the path provided:
+	 *   1) The file path is read by a File Reader, a new String is created with the same characters of the file from the file path;
+	 *   2) Once the new String (Json) is created it's converted from its status (String) to Json Node and then to an Object (Configuration).
 	 */
 	public void loadConfigurationFile(String filePath) {
 		FileReader fileReader = null;
@@ -46,6 +50,7 @@ public class ConfigurationManager {
 		} catch (IOException ioException) {
 			throw new HttpConfigurationException(ioException);
 		}
+		
 		JsonNode jsonNode = null;
 		
 		try {
@@ -62,12 +67,10 @@ public class ConfigurationManager {
 		}
 	}
 	
-	/*
-	 * Returns the loaded configuration
-	 */
+	// Returns the loaded configuration, once it's created by the method above.
 	public Configuration getCurrentConfiguration() {
 		if(configuration == null) {
-			throw new HttpConfigurationException("No configuaration set");
+			throw new HttpConfigurationException("No configuration set, please set one");
 		}
 		return configuration;
 	}

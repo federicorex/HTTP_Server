@@ -8,10 +8,12 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// This class handles individual client connections, processes the request and sends back a simple HTTP response.
 public class HTTPConnectionWorkerThread extends Thread{
 	
 	private final static Logger LOGGER = LoggerFactory.getLogger(HTTPConnectionWorkerThread.class);
 
+	// The socket object represents the client connection.
 	private Socket socket;
 	
 	public HTTPConnectionWorkerThread(Socket socket) {
@@ -19,6 +21,12 @@ public class HTTPConnectionWorkerThread extends Thread{
 		this.socket = socket;
 	}
 
+	/*
+	 * 1) Opens InputStream and OutputStream for reading from and writing to the client.
+	 * 2) Constructs a simple HTML page as a String, prepares a basic HTTP response with a status line, headers and the HTML content.
+	 * 3) Sends the response back to the client through the OutputStream.
+	 * 4) Closes the streams and the socket to free resources.
+	 */
 	@Override
 	public void run() {
 		
