@@ -19,22 +19,27 @@ public class Json {
 		return objectMapper;
 	}
 	
+	// From JSON string (initial step) to JSON Node (intermediate step)
 	public static JsonNode parse(String jsonSource) throws IOException {
 		return objectMapper.readTree(jsonSource);
 	}
 	
+	// From JSON Node (intermediate step) to Object/Generic (final step)
 	public static <T> T fromJson(JsonNode jsonNode, Class<T> clazz) throws JsonProcessingException {
 		return objectMapper.treeToValue(jsonNode, clazz);
 	}
 	
+	// Object/Generic (initial step) to from JSON Node (intermediate step) 
 	public static JsonNode toJson(Object object) {
 		return objectMapper.valueToTree(object);
 	}
 	
+	//  From JSON Node (intermediate step) to JSON string --not indented (final step)
 	public static String stringify(JsonNode jsonNode) throws JsonProcessingException {
 		return generateJson(jsonNode, Boolean.FALSE);
 	}
 	
+	//  From JSON Node (intermediate step) to JSON string --indented (final step)
 	public static String stringifyPretty(JsonNode jsonNode) throws JsonProcessingException {
 		return generateJson(jsonNode, Boolean.TRUE);
 	}
