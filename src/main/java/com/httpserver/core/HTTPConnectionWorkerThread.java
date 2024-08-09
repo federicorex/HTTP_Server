@@ -22,9 +22,12 @@ public class HTTPConnectionWorkerThread extends Thread{
 	@Override
 	public void run() {
 		
+		InputStream inputStream = null;
+		OutputStream outputStream = null;
+		
 		try {
-			InputStream inputStream = socket.getInputStream();
-			OutputStream outputStream = socket.getOutputStream();
+			inputStream = socket.getInputStream();
+			outputStream = socket.getOutputStream();
 			String html = "<!DOCTYPE html>\r\n" + "<html lang=\"en\">\r\n" + "<head>\r\n"
 					+ "    <meta charset=\"UTF-8\">\r\n"
 					+ "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n"
@@ -35,12 +38,32 @@ public class HTTPConnectionWorkerThread extends Thread{
 					"Content-Length: " + html.getBytes().length + CRLF + // Header
 					CRLF + html + CRLF + CRLF;
 			outputStream.write(response.getBytes());
-			inputStream.close();
-			outputStream.close();
-			socket.close();
+
 			LOGGER.info(" ** CONNECTION PROCESSING FINISHED ** ");
 		} catch (IOException ioException) {
-			ioException.printStackTrace();
+			LOGGER.error(" !! Problem with the connection !! ", ioException);
+		} finally {
+			if(inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException ioException) {
+					ioException.printStackTrace();
+				}
+			}
+			if(outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException ioException) {
+					ioException.printStackTrace();
+				}
+			}
+			if(socket != null) {
+				try {
+					socket.close();
+				} catch (IOException ioException) {
+					ioException.printStackTrace();
+				}
+			}
 		}
 	}
 	

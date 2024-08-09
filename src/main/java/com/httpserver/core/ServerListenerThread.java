@@ -35,7 +35,7 @@ public class ServerListenerThread extends Thread{
 			}
         	
         } catch(IOException ioException) {
-        	ioException.printStackTrace();
+        	LOGGER.error(" !! Problem with setting socket !!", ioException);
         } finally {
 			if(serverSocket != null) {
 				try {
