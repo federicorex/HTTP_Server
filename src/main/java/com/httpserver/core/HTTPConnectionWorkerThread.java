@@ -36,6 +36,7 @@ public class HTTPConnectionWorkerThread extends Thread{
 		try {
 			inputStream = socket.getInputStream();
 			outputStream = socket.getOutputStream();
+			
 			String html = "<!DOCTYPE html>\r\n" + "<html lang=\"en\">\r\n" + "<head>\r\n"
 					+ "    <meta charset=\"UTF-8\">\r\n"
 					+ "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n"
