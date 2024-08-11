@@ -15,27 +15,51 @@ public class HTTPParser {
 	private final static int CR = 0x0D; // 13
 	private final static int LF = 0x0A; // 10
 	
-	public HTTPRequest parseHTTPRequest(InputStream inputStream) throws IOException {
+	public HTTPRequest parseHTTPRequest(InputStream inputStream) throws HTTPParsingException {
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.US_ASCII);
 		HTTPRequest httpRequest = new HTTPRequest();
 		
-		parseRequestLine(inputStreamReader, httpRequest);
+		try {
+			parseRequestLine(inputStreamReader, httpRequest);
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
+		}
 		parseRequestHeader(inputStreamReader, httpRequest);
 		parseRequestBody(inputStreamReader, httpRequest);
 		
 		return httpRequest;
 	}
 
-	private void parseRequestLine(InputStreamReader inputStreamReader, HTTPRequest httpRequest) throws IOException {
+	private void parseRequestLine(InputStreamReader inputStreamReader, HTTPRequest httpRequest) throws IOException, HTTPParsingException {
+		StringBuilder processingDataBuffer = new StringBuilder();
 		int _byte;
+		boolean httpMethodParsed = false;
+		boolean httpRequestTargetParsed = false;
 		
 		while((_byte = inputStreamReader.read()) >= 0) {
 			if(_byte == CR) {
-				inputStreamReader.read();
+				_byte = inputStreamReader.read();
 				if(_byte == LF) {
-					inputStreamReader.read();
+					LOGGER.debug("Request line Version to process: {}", processingDataBuffer.toString());
+					
 					return;
 				}
+			}
+			
+			if(_byte == SP) {
+				if(!httpMethodParsed) {
+					LOGGER.debug("Request line Method to process: {}", processingDataBuffer.toString());
+					
+					httpRequest.setHttpMethod(processingDataBuffer.toString());
+					httpMethodParsed = true;
+				} else if(!httpRequestTargetParsed) {
+					LOGGER.debug("Request line Request Target to process: {}", processingDataBuffer.toString());
+					
+					httpRequestTargetParsed = true;
+				}
+				processingDataBuffer.delete(0, processingDataBuffer.length());
+			} else {
+				processingDataBuffer.append((char) _byte);
 			}
 		}
 	}
