@@ -32,7 +32,7 @@ public class HTTPParser {
 
 	private void parseRequestLine(InputStreamReader inputStreamReader, HTTPRequest httpRequest) throws IOException, HTTPParsingException {
 		StringBuilder processingDataBuffer = new StringBuilder();
-		int _byte;
+		int _byte; 
 		boolean httpMethodParsed = false;
 		boolean httpRequestTargetParsed = false;
 		
@@ -41,8 +41,13 @@ public class HTTPParser {
 				_byte = inputStreamReader.read();
 				if(_byte == LF) {
 					LOGGER.debug("Request line Version to process: {}", processingDataBuffer.toString());
+					if(!httpMethodParsed || !httpRequestTargetParsed) {
+						throw new HTTPParsingException(HTTPStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+					}
 					
 					return;
+				} else {
+					throw new HTTPParsingException(HTTPStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
 				}
 			}
 			
@@ -54,12 +59,20 @@ public class HTTPParser {
 					httpMethodParsed = true;
 				} else if(!httpRequestTargetParsed) {
 					LOGGER.debug("Request line Request Target to process: {}", processingDataBuffer.toString());
+					httpRequest.setHttpRequestTarget(processingDataBuffer.toString());
 					
 					httpRequestTargetParsed = true;
+				} else {
+					throw new HTTPParsingException(HTTPStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
 				}
 				processingDataBuffer.delete(0, processingDataBuffer.length());
 			} else {
 				processingDataBuffer.append((char) _byte);
+				if(!httpMethodParsed) {
+					if(processingDataBuffer.length() > HTTPMethod.MAX_LENGTH) {
+						throw new HTTPParsingException(HTTPStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
+					}
+				}
 			}
 		}
 	}
