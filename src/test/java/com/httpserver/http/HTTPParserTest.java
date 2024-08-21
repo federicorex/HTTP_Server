@@ -78,6 +78,45 @@ public class HTTPParserTest {
 	}
 	
 	@Test
+	void testParseHTTPRequestBadHTTPVersion() {
+		
+		try {
+			httpParser.parseHTTPRequest(generateNotValidGETTestCaseBadHTTPVersion());
+			Assertions.fail();
+		} catch (HTTPParsingException httpParsingException) {
+			Assertions.assertEquals(httpParsingException.getHttpStatusCode(), HTTPStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+		}
+		
+	}
+	
+	@Test
+	void testParseHTTPRequestUnsupportedHTTPVersion() {
+		
+		try {
+			httpParser.parseHTTPRequest(generateNotValidGETTestCaseUnsupportedHTTPVersion());
+			Assertions.fail();
+		} catch (HTTPParsingException httpParsingException) {
+			Assertions.assertEquals(httpParsingException.getHttpStatusCode(), HTTPStatusCode.SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED);
+		}
+		
+	}
+	
+	@Test
+	void testParseHTTPRequestSupportedHTTPVersion() {
+		HTTPRequest httpRequest = null;
+		
+		try {
+			httpRequest = httpParser.parseHTTPRequest(generateNotValidGETTestCaseSupportedHTTPVersion());
+		} catch (HTTPParsingException httpParsingException) {
+			Assertions.fail(httpParsingException);
+		}
+		
+		Assertions.assertNotNull(httpRequest);
+		Assertions.assertEquals(httpRequest.getBestCompatibleHTTPVersion(), HTTPVersion.HTTP_1_1);
+		Assertions.assertEquals(httpRequest.getOriginalHTTPVersion(), "HTTP/1.2");
+	}
+	
+	@Test
 	void testParseHTTPRequest() {
 		HTTPRequest httpRequest = null;
 		
@@ -90,6 +129,8 @@ public class HTTPParserTest {
 		Assertions.assertNotNull(httpRequest);
 		Assertions.assertEquals(httpRequest.getHttpMethod(), HTTPMethod.GET);
 		Assertions.assertEquals(httpRequest.getHttpRequestTarget(), "/");
+		Assertions.assertEquals(httpRequest.getBestCompatibleHTTPVersion(), HTTPVersion.HTTP_1_1);
+		Assertions.assertEquals(httpRequest.getOriginalHTTPVersion(), "HTTP/1.1");
 	}
 	
 	private InputStream generateValidGETTestCase() {
@@ -214,6 +255,78 @@ public class HTTPParserTest {
 	
 	private InputStream generateNotValidGETTestCaseRequestLineOnlyCRnoLF() {
 		String request = "GET / HTTP/1.1\r" // there's no line feed here, just for the test
+				+ "Host: localhost:8080\r\n"
+				+ "Connection: keep-alive\r\n"
+				+ "Cache-Control: max-age=0\r\n"
+				+ "sec-ch-ua: \"Not)A;Brand\";v=\"99\", \"Google Chrome\";v=\"127\", \"Chromium\";v=\"127\"\r\n"
+				+ "sec-ch-ua-mobile: ?0\r\n"
+				+ "sec-ch-ua-platform: \"Windows\"\r\n"
+				+ "Upgrade-Insecure-Requests: 1\r\n"
+				+ "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36\r\n"
+				+ "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\n"
+				+ "Sec-Fetch-Site: none\r\n"
+				+ "Sec-Fetch-Mode: navigate\r\n"
+				+ "Sec-Fetch-User: ?1\r\n"
+				+ "Sec-Fetch-Dest: document\r\n"
+				+ "Accept-Encoding: gzip, deflate, br, zstd\r\n"
+				+ "Accept-Language: en-US,en;q=0.9\r\n"
+				+ "\r\n";
+		
+		InputStream inputStream = new ByteArrayInputStream(request.getBytes(StandardCharsets.US_ASCII));
+		
+		return inputStream;
+	}
+	
+	private InputStream generateNotValidGETTestCaseBadHTTPVersion() {
+		String request = "GET / HTP/1.1\r\n" // there's no line feed here, just for the test
+				+ "Host: localhost:8080\r\n"
+				+ "Connection: keep-alive\r\n"
+				+ "Cache-Control: max-age=0\r\n"
+				+ "sec-ch-ua: \"Not)A;Brand\";v=\"99\", \"Google Chrome\";v=\"127\", \"Chromium\";v=\"127\"\r\n"
+				+ "sec-ch-ua-mobile: ?0\r\n"
+				+ "sec-ch-ua-platform: \"Windows\"\r\n"
+				+ "Upgrade-Insecure-Requests: 1\r\n"
+				+ "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36\r\n"
+				+ "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\n"
+				+ "Sec-Fetch-Site: none\r\n"
+				+ "Sec-Fetch-Mode: navigate\r\n"
+				+ "Sec-Fetch-User: ?1\r\n"
+				+ "Sec-Fetch-Dest: document\r\n"
+				+ "Accept-Encoding: gzip, deflate, br, zstd\r\n"
+				+ "Accept-Language: en-US,en;q=0.9\r\n"
+				+ "\r\n";
+		
+		InputStream inputStream = new ByteArrayInputStream(request.getBytes(StandardCharsets.US_ASCII));
+		
+		return inputStream;
+	}
+	
+	private InputStream generateNotValidGETTestCaseUnsupportedHTTPVersion() {
+		String request = "GET / HTTP/2.1\r\n" // there's no line feed here, just for the test
+				+ "Host: localhost:8080\r\n"
+				+ "Connection: keep-alive\r\n"
+				+ "Cache-Control: max-age=0\r\n"
+				+ "sec-ch-ua: \"Not)A;Brand\";v=\"99\", \"Google Chrome\";v=\"127\", \"Chromium\";v=\"127\"\r\n"
+				+ "sec-ch-ua-mobile: ?0\r\n"
+				+ "sec-ch-ua-platform: \"Windows\"\r\n"
+				+ "Upgrade-Insecure-Requests: 1\r\n"
+				+ "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36\r\n"
+				+ "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\n"
+				+ "Sec-Fetch-Site: none\r\n"
+				+ "Sec-Fetch-Mode: navigate\r\n"
+				+ "Sec-Fetch-User: ?1\r\n"
+				+ "Sec-Fetch-Dest: document\r\n"
+				+ "Accept-Encoding: gzip, deflate, br, zstd\r\n"
+				+ "Accept-Language: en-US,en;q=0.9\r\n"
+				+ "\r\n";
+		
+		InputStream inputStream = new ByteArrayInputStream(request.getBytes(StandardCharsets.US_ASCII));
+		
+		return inputStream;
+	}
+	
+	private InputStream generateNotValidGETTestCaseSupportedHTTPVersion() {
+		String request = "GET / HTTP/1.2\r\n" // there's no line feed here, just for the test
 				+ "Host: localhost:8080\r\n"
 				+ "Connection: keep-alive\r\n"
 				+ "Cache-Control: max-age=0\r\n"
