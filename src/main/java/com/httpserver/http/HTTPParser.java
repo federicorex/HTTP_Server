@@ -44,6 +44,11 @@ public class HTTPParser {
 					if(!httpMethodParsed || !httpRequestTargetParsed) {
 						throw new HTTPParsingException(HTTPStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
 					}
+					try {
+						httpRequest.setOriginalHTTPVersion(processingDataBuffer.toString());
+					} catch (BadHTTPVersionException e) {
+						throw new HTTPParsingException(HTTPStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+					}
 					
 					return;
 				} else {

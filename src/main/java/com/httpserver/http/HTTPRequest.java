@@ -4,7 +4,8 @@ public class HTTPRequest extends HTTPMessage {
 
 	private HTTPMethod httpMethod;
 	private String httpRequestTarget;
-	private String httpVersion;
+	private String originalHTTPVersion;
+	private HTTPVersion bestCompatibleHTTPVersion;
 	
 	HTTPRequest() {
 	
@@ -33,6 +34,27 @@ public class HTTPRequest extends HTTPMessage {
 			throw new HTTPParsingException(HTTPStatusCode.SERVER_ERROR_500_INTERNAL_SERVER_ERROR);
 		}
 		this.httpRequestTarget = httpRequestTarget;
+	}
+
+	public String getOriginalHTTPVersion() {
+		return originalHTTPVersion;
+	}
+
+	public void setOriginalHTTPVersion(String originalHTTPVersion) throws BadHTTPVersionException, HTTPParsingException {
+		this.originalHTTPVersion = originalHTTPVersion;
+		this.bestCompatibleHTTPVersion = HTTPVersion.getBestCompatibleVersion(originalHTTPVersion);
+		
+		if(this.bestCompatibleHTTPVersion == null) {
+			throw new HTTPParsingException(HTTPStatusCode.SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED);
+		}
+	}
+
+	public HTTPVersion getBestCompatibleHTTPVersion() {
+		return bestCompatibleHTTPVersion;
+	}
+
+	public void setBestCompatibleHTTPVersion(HTTPVersion bestCompatibleHTTPVersion) {
+		this.bestCompatibleHTTPVersion = bestCompatibleHTTPVersion;
 	}
 	
 }

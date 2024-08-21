@@ -1,5 +1,6 @@
 package com.httpserver.http;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum HTTPVersion {
@@ -18,7 +19,27 @@ public enum HTTPVersion {
 	
 	private static final Pattern httpVersionRegexPattern = Pattern.compile("^HTTP/(?<major>\\d+).(?<minor>\\d+)");
 	
-	public static HTTPVersion getBestCompatibleVersion(String literalversion) {
-		return null; // !!! TO COMPLETE !!!
+	public static HTTPVersion getBestCompatibleVersion(String literalversion) throws BadHTTPVersionException {
+		Matcher matcher = httpVersionRegexPattern.matcher(literalversion);
+		if(!matcher.find() || matcher.groupCount() != 2) {
+			throw new BadHTTPVersionException();
+		}
+		int major = Integer.parseInt(matcher.group("major"));
+		int minor = Integer.parseInt(matcher.group("minor"));
+		HTTPVersion tempBestCompatibleHTTPVersion = null;
+		
+		for(HTTPVersion httpVersion : HTTPVersion.values()) {
+			if(httpVersion.LITERAL.equals(literalversion)) {
+				return httpVersion;
+			} else {
+				if(httpVersion.MAJOR == major) {
+					if(httpVersion.MINOR < minor) {
+						tempBestCompatibleHTTPVersion = httpVersion;
+					}
+				}
+			}
+		}
+		return tempBestCompatibleHTTPVersion;
 	}
+	
 }
