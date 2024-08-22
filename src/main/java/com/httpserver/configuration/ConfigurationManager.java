@@ -37,7 +37,7 @@ public class ConfigurationManager {
 		try {
 			fileReader = new FileReader(filePath);
 		} catch (FileNotFoundException fileNotFoundException) {
-			throw new HttpConfigurationException(fileNotFoundException);
+			throw new HTTPConfigurationException(fileNotFoundException);
 		}
 		
 		StringBuffer stringBuffer = new StringBuffer();
@@ -48,7 +48,7 @@ public class ConfigurationManager {
 				stringBuffer.append((char) i);
 			}
 		} catch (IOException ioException) {
-			throw new HttpConfigurationException(ioException);
+			throw new HTTPConfigurationException(ioException);
 		}
 		
 		JsonNode jsonNode = null;
@@ -57,20 +57,20 @@ public class ConfigurationManager {
 			jsonNode = Json.parse(stringBuffer.toString());
 			fileReader.close();
 		} catch (IOException ioException) {
-			throw new HttpConfigurationException("Error parsing the configuration file", ioException);
+			throw new HTTPConfigurationException("Error parsing the configuration file", ioException);
 		}
 		
 		try {
 			configuration = Json.fromJson(jsonNode, Configuration.class);
 		} catch (JsonProcessingException jsonProcessingException) {
-			throw new HttpConfigurationException("Error parsing the configuration file, internal", jsonProcessingException);
+			throw new HTTPConfigurationException("Error parsing the configuration file, internal", jsonProcessingException);
 		}
 	}
 	
 	// Returns the loaded configuration, once it's created by the method above.
 	public Configuration getCurrentConfiguration() {
 		if(configuration == null) {
-			throw new HttpConfigurationException("No configuration set, please set one");
+			throw new HTTPConfigurationException("No configuration set, please set one");
 		}
 		return configuration;
 	}
