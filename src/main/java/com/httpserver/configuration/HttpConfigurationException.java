@@ -1,22 +1,22 @@
 package com.httpserver.configuration;
 
-public class HttpConfigurationException extends RuntimeException {
+public class HTTPConfigurationException extends RuntimeException {
 
 	private static final long serialVersionUID = 5210746982712664867L;
 
-	public HttpConfigurationException() {
+	public HTTPConfigurationException() {
 		super();
 	}
 
-	public HttpConfigurationException(String message, Throwable cause) {
+	public HTTPConfigurationException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public HttpConfigurationException(String message) {
+	public HTTPConfigurationException(String message) {
 		super(message);
 	}
 
-	public HttpConfigurationException(Throwable cause) {
+	public HTTPConfigurationException(Throwable cause) {
 		super(cause);
 	}
 	
